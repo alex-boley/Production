@@ -167,8 +167,3 @@ def check_new_ip_updates():
 check_new_ip_updates()
 
 put_new_aws_east('networkgroups', 'AWS_EAST')
-
-
-
-
-
