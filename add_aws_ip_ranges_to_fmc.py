@@ -10,7 +10,7 @@ config.read("/etc/.config.txt")
 
 # To check when this was last updated and compare to when AWS updated their IP ranges
 last_update = configparser.ConfigParser()
-last_update.read("aws_range_last_updated.txt")
+last_update.read("/home/netadmin/prod/scripts/aws_range_last_updated.txt")
 
  # Variables 
 server = "https://pr2fmc01.net.ithaka.org"
@@ -154,10 +154,10 @@ def check_new_ip_updates():
         sys.exit()
     else:
         last_update.set("date","last_updated", ip_ranges_updated_on)
-        with open('aws_range_last_updated.txt', 'w') as configfile:
+        with open('/home/netadmin/prod/scripts/aws_range_last_updated.txt', 'w') as configfile:
             last_update.write(configfile)
 
-        with open('aws_update_log_file.txt', 'a+') as aws_update_log_file:
+        with open('/home/netadmin/prod/scripts/aws_update_log_file.txt', 'a+') as aws_update_log_file:
                 aws_update_log_file.write("updated on " + str(now) + "\n")
 
 #################################
