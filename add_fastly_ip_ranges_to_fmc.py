@@ -210,9 +210,9 @@ def put_new_fastly_net_all(object_type, objectname):
 
     if added_ips == removed_ips:
         print('no changes')
-        #sys.exit()
+        sys.exit()
 
-    Send email to network engineers with the changes being made
+    # Send email to network engineers with the changes being made
     sender = 'FMC_Automation@ithaka.org'
     receivers = ['alex.boley@ithaka.org, robert.Kupiec@ithaka.org, jason.baker@ithaka.org']
 
@@ -237,7 +237,7 @@ These ip's are being added to the FASTLY_NET_ALL Network Group:
     with open('/home/netadmin/prod/scripts/fastly_update_log_file.txt', 'a+') as fastly_update_log_file:
                 fastly_update_log_file.write("updated on " + str(now) + "\n")
 
-    Finally update the object in the FMC
+    # Finally update the object in the FMC
 
     api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups/" + get_object_id(object_type, objectname)
     url = server + api_path
