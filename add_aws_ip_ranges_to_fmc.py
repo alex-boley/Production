@@ -90,7 +90,7 @@ def get_object(object_type, objectname):
         status_code = r.status_code
         resp = r.text
         if (status_code == 200):
-            print("****************************GET successful for " + objectname + " in " + object_type + "." + "Response data --> ")
+            print("****************************GET successful for " + objectname + " in " + object_type + "." + " Response data --> ")
             json_resp = json.loads(resp)
             return json_resp
             #print(json.dumps(json_resp,sort_keys=True,indent=4, separators=(',', ': ')))
@@ -216,6 +216,12 @@ def put_new_aws_east(object_type, objectname):
 
     added_ips = list(set(new_aws_list_compare) - set(current_aws_list_compare))
     removed_ips = list(set(current_aws_list_compare) - set(new_aws_list_compare))
+
+    print (removed_ips, added_ips)
+
+    if added_ips == [] and removed_ips == []:
+        sys.exit()
+    
 
     # Send email to network engineers with the changes being made
     sender = 'FMC_Automation@ithaka.org'
