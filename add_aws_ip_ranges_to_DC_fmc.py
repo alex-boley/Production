@@ -179,7 +179,8 @@ def get_amazon_ip_ranges():
     #         literals.append({'type': 'Network', 'value': item['ip_prefix']})
 
     with open('/home/netadmin/prod/scripts/reduced_aws_ip.json', 'w') as file:
-        for item in file.json()['prefixes']:
+        data = json.load(file)
+        for item in data['prefixes']:
             if 'us-east-' in file['region'] and "AMAZON" in file['service']:
                 literals.append({'type': 'Network', 'value': file['ip_prefix']})
 
