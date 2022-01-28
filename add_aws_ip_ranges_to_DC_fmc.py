@@ -168,22 +168,15 @@ def push_deployment_to_device(version, device_id):
 def get_amazon_ip_ranges():
     literals = []
 
-    # ip_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['prefixes']
-    # #ipv6_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['ipv6_prefixes']
-    # if ip_ranges == "":
-    #     print('No IPs recieved from Amazon')
-    #     sys.exit()
-    #
-    # for item in ip_ranges:
-    #     if 'us-east-' in item['region'] and "AMAZON" in item['service']:
-    #         literals.append({'type': 'Network', 'value': item['ip_prefix']})
+    ip_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['prefixes']
+    #ipv6_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['ipv6_prefixes']
+    if ip_ranges == "":
+        print('No IPs recieved from Amazon')
+        sys.exit()
 
-    with open('/home/netadmin/prod/scripts/reduced_aws_ip.json', 'r') as file:
-        data = json.loads(file.read())
-        for item in data['prefixes']:
-            if 'us-east-' in item['region'] and "AMAZON" in item['service']:
-                literals.append({'type': 'Network', 'value': item['ip_prefix']})
-
+    for item in ip_ranges:
+        if 'us-east-' in item['region'] and "AMAZON" in item['service']:
+            literals.append({'type': 'Network', 'value': item['ip_prefix']})
 
     #print("******** \n\n  There is " + str(len(literals)) + " ip ranges added.\n\n ********")
     # for item in ipv6_ranges:
@@ -230,24 +223,24 @@ def put_new_aws_east(object_type, objectname):
     
 
     # Send email to network engineers with the changes being made
-#     sender = 'DC_FMC_Automation@ithaka.org'
-#     receivers = ['alex.boley@ithaka.org, robert.Kupiec@ithaka.org, jason.baker@ithaka.org']
-#
-#     message = """From: DC_FMC_Automation@ithaka.org
-# To: jason.baker@ithaka.org, alex.boley@ithaka.org, robert.Kupiec@ithaka.org
-# Subject: DC FMC AWS-EAST Network Group Update
-#
-# These ip's are being added to the AWS-EAST Network Group:
-# """ + ', '.join(added_ips) + """
-# \n These ip's are being removed from the AWS-EAST Network Group:
-# """ + ', '.join(removed_ips)
-#
-#     try:
-#        smtpObj = smtplib.SMTP('smtp.ithaka.org')
-#        smtpObj.sendmail(sender, receivers, message)
-#        print("Successfully sent email")
-#     except SMTPException:
-#        print("Error: unable to send email")
+    sender = 'DC_FMC_Automation@ithaka.org'
+    receivers = ['alex.boley@ithaka.org, robert.Kupiec@ithaka.org, jason.baker@ithaka.org']
+
+    message = """From: DC_FMC_Automation@ithaka.org
+To: jason.baker@ithaka.org, alex.boley@ithaka.org, robert.Kupiec@ithaka.org
+Subject: DC FMC AWS-EAST Network Group Update
+
+These ip's are being added to the AWS-EAST Network Group:
+""" + ', '.join(added_ips) + """
+\n These ip's are being removed from the AWS-EAST Network Group:
+""" + ', '.join(removed_ips)
+
+    try:
+       smtpObj = smtplib.SMTP('smtp.ithaka.org')
+       smtpObj.sendmail(sender, receivers, message)
+       print("Successfully sent email")
+    except SMTPException:
+       print("Error: unable to send email")
 
     # Finally update the object in the FMC
     print(json.dumps(put_data))
