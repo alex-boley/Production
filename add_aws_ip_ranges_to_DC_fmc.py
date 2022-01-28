@@ -168,16 +168,21 @@ def push_deployment_to_device(version, device_id):
 def get_amazon_ip_ranges():
     literals = []
 
-    ip_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['prefixes']
-    #ipv6_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['ipv6_prefixes']
-    if ip_ranges == "":
-        print('No IPs recieved from Amazon')
-        sys.exit()
+    # ip_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['prefixes']
+    # #ipv6_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['ipv6_prefixes']
+    # if ip_ranges == "":
+    #     print('No IPs recieved from Amazon')
+    #     sys.exit()
+    #
+    # for item in ip_ranges:
+    #     if 'us-east-' in item['region'] and "AMAZON" in item['service']:
+    #         literals.append({'type': 'Network', 'value': item['ip_prefix']})
 
-    for item in ip_ranges:
-        if 'us-east-' in item['region'] and "AMAZON" in item['service']:
-            literals.append({'type': 'Network', 'value': item['ip_prefix']})
-    
+    with open('/home/netadmin/prod/scripts/inital_aws_ip.json', 'w') as file:
+        for item in file.json()['prefixes']:
+            if 'us-east-' in file['region'] and "AMAZON" in file['service']:
+                literals.append({'type': 'Network', 'value': file['ip_prefix']})
+
 
     #print("******** \n\n  There is " + str(len(literals)) + " ip ranges added.\n\n ********")
     # for item in ipv6_ranges:
