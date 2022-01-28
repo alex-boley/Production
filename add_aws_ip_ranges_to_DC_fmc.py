@@ -260,6 +260,8 @@ def put_new_aws_east(object_type, objectname):
             json_resp = json.loads(resp)
         else :
             r.raise_for_status()
+            json_resp = json.loads(resp)
+            print(json_resp)
     except requests.exceptions.HTTPError as err:
         print ("Error in connection --> "+str(err))
     finally:
