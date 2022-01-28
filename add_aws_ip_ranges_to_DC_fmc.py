@@ -224,26 +224,27 @@ def put_new_aws_east(object_type, objectname):
     
 
     # Send email to network engineers with the changes being made
-    sender = 'DC_FMC_Automation@ithaka.org'
-    receivers = ['alex.boley@ithaka.org, robert.Kupiec@ithaka.org, jason.baker@ithaka.org']
-
-    message = """From: DC_FMC_Automation@ithaka.org
-To: jason.baker@ithaka.org, alex.boley@ithaka.org, robert.Kupiec@ithaka.org
-Subject: DC FMC AWS-EAST Network Group Update
-
-These ip's are being added to the AWS-EAST Network Group:
-""" + ', '.join(added_ips) + """
-\n These ip's are being removed from the AWS-EAST Network Group:
-""" + ', '.join(removed_ips)
-
-    try:
-       smtpObj = smtplib.SMTP('smtp.ithaka.org')
-       smtpObj.sendmail(sender, receivers, message)
-       print("Successfully sent email")
-    except SMTPException:
-       print("Error: unable to send email")
+#     sender = 'DC_FMC_Automation@ithaka.org'
+#     receivers = ['alex.boley@ithaka.org, robert.Kupiec@ithaka.org, jason.baker@ithaka.org']
+#
+#     message = """From: DC_FMC_Automation@ithaka.org
+# To: jason.baker@ithaka.org, alex.boley@ithaka.org, robert.Kupiec@ithaka.org
+# Subject: DC FMC AWS-EAST Network Group Update
+#
+# These ip's are being added to the AWS-EAST Network Group:
+# """ + ', '.join(added_ips) + """
+# \n These ip's are being removed from the AWS-EAST Network Group:
+# """ + ', '.join(removed_ips)
+#
+#     try:
+#        smtpObj = smtplib.SMTP('smtp.ithaka.org')
+#        smtpObj.sendmail(sender, receivers, message)
+#        print("Successfully sent email")
+#     except SMTPException:
+#        print("Error: unable to send email")
 
     # Finally update the object in the FMC
+    print(json.dumps(put_data))
 
     api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups/" + get_object_id(object_type, objectname)
     url = server + api_path

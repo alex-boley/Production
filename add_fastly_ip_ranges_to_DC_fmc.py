@@ -11,7 +11,7 @@ config = configparser.ConfigParser()
 config.read("/etc/.config.txt")
 
  # Variables 
-server = "https://pr2fmc01.net.ithaka.org"
+server = "https://10.102.254.100"
 username = "api"
 password = config.get("api","api_password")
 data = ''
@@ -262,6 +262,6 @@ These ip's are being added to the FASTLY_NET_ALL Network Group:
 ######## Main Program ###########
 #################################
 
-put_new_fastly_net_all('networkgroups', 'FASTLY_NET_ALL')
+put_new_fastly_net_all('networkgroups', 'FASTLY')
 
 deploy_changes_in_fmc()
