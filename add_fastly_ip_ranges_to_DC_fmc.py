@@ -115,7 +115,7 @@ def deploy_changes_in_fmc():
             devices = json_resp['items']
             for device in devices:
                 if device['canBeDeployed'] == True:
-                    if device['device']['name'] == 'pr1fpha' or 'aa1fpha':
+                    if device['device']['name'] == 'aa2-vm-ftd-1' or 'pr2-vm-ftd-1':
                         push_deployment_to_device(device['version'], device['device']['id'])
                         time.sleep(1200)
         else:
@@ -169,7 +169,7 @@ def get_fastly_ip_ranges():
         sys.exit()
 
     for item in ip_ranges:
-        literals.append({'type': 'Network', 'value': item })
+        literals.append({'type': 'Network', 'value': item})
 
     return literals
 
@@ -234,7 +234,7 @@ These ip's are being added to the FASTLY_NET_ALL Network Group:
     except SMTPException:
        print("Error: unable to send email")
 
-    with open('/home/netadmin/prod/scripts/fastly_update_log_file.txt', 'a+') as fastly_update_log_file:
+    with open('/home/netadmin/prod/scripts/DC_fastly_update_log_file.txt', 'a+') as fastly_update_log_file:
                 fastly_update_log_file.write("updated on " + str(now) + "\n")
 
     # Finally update the object in the FMC
