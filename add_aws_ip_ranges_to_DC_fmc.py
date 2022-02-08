@@ -178,6 +178,7 @@ def get_amazon_ip_ranges():
         if 'us-east-' in item['region'] and "AMAZON" in item['service']:
             literals.append({'type': 'Network', 'value': item['ip_prefix']})
 
+
     #print("******** \n\n  There is " + str(len(literals)) + " ip ranges added.\n\n ********")
     # for item in ipv6_ranges:
     #     if 'us-east' in item['region']:
@@ -185,12 +186,16 @@ def get_amazon_ip_ranges():
     #print(literals)
     return literals
 
-def put_new_aws_east(object_type, objectname):
+def put_new_aws_east(object_type, objectname, objectname2):
     # Create the put data by erasing all of its networks and replacing them all from the AWS website json file
     # We will also do a comparsion of ip's being removed and added so this can be emailed to the network team
     # and documented
     put_data = get_object(object_type, objectname)
+    put_data2 = get_object(object_type, objectname2)
+    for ip in put_data2['literals']:
+        put_data['literals'].append(ip)
     put_data.pop('links', None)
+    put_data2.pop('links', None)
 
     current_aws_list = put_data['literals']
 
@@ -216,11 +221,21 @@ def put_new_aws_east(object_type, objectname):
     added_ips = list(set(new_aws_list_compare) - set(current_aws_list_compare))
     removed_ips = list(set(current_aws_list_compare) - set(new_aws_list_compare))
 
-    print (removed_ips, added_ips)
-
     if added_ips == [] and removed_ips == []:
         sys.exit()
-    
+
+    first_object = []
+    second_object = []
+
+    for ip in put_data['literals'][:995]:
+        first_object.append(ip)
+
+    for ip in put_data['literals'][995:]:
+        second_object.append(ip)
+
+    put_data['literals'] = first_object
+    put_data2['literals'] = second_object
+
 
     # Send email to network engineers with the changes being made
     sender = 'DC_FMC_Automation@ithaka.org'
@@ -230,10 +245,11 @@ def put_new_aws_east(object_type, objectname):
 To: jason.baker@ithaka.org, alex.boley@ithaka.org, robert.Kupiec@ithaka.org
 Subject: DC FMC AWS-EAST Network Group Update
 
-These ip's are being added to the AWS-EAST Network Group:
+These ip's are being added to the AWS-EAST-1 and AWS-EAST-2 Network Groups (nested within AWS-EAST):
 """ + ', '.join(added_ips) + """
-\n These ip's are being removed from the AWS-EAST Network Group:
+\n These ip's are being removed from the AWS-EAST-1 and AWS-EAST-2 Network Groups(nested within AWS-EAST):
 """ + ', '.join(removed_ips)
+
 
     try:
        smtpObj = smtplib.SMTP('smtp.ithaka.org')
@@ -244,6 +260,8 @@ These ip's are being added to the AWS-EAST Network Group:
 
     # Finally update the object in the FMC
     print(json.dumps(put_data))
+
+##### First object AWS-EAST-1
 
     api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups/" + get_object_id(object_type, objectname)
     url = server + api_path
@@ -268,6 +286,33 @@ These ip's are being added to the AWS-EAST Network Group:
     finally:
         if r: r.close()
 
+##### First object AWS-EAST-2
+
+    api_path = "/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups/" + get_object_id(
+        object_type, objectname2)
+    url = server + api_path
+    if (url[-1] == '/'):
+        url = url[:-1]
+
+    try:
+        r = requests.put(url, data=json.dumps(put_data2), headers=generate_token(), verify=False)
+        status_code = r.status_code
+        resp = r.text
+        print("Status code is: " + str(status_code))
+        if status_code == 200:
+            json_resp = json.loads(resp)
+        else:
+            r.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        print("Error in connection --> " + str(err))
+        print(status_code)
+        json_resp = json.loads(resp)
+        print(json_resp)
+
+    finally:
+        if r: r.close()
+
+
 def check_new_ip_updates():
     last_updated = last_update.get("date","last_updated")
     ip_ranges_updated_on = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['createDate']
@@ -287,6 +332,6 @@ def check_new_ip_updates():
 
 check_new_ip_updates()
 
-put_new_aws_east('networkgroups', 'AWS-EAST-NEST-TEST')
+put_new_aws_east('networkgroups', 'AWS-EAST-1', 'AWS-EAST-2')
 
 deploy_changes_in_fmc()
